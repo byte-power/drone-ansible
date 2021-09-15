@@ -8,7 +8,16 @@ LABEL maintainer="Drone.IO Community <drone-dev@googlegroups.com>" \
 RUN apk add --no-cache bash git curl rsync openssh-client sshpass py3-pip py3-requests py3-paramiko python3-dev libffi-dev libressl-dev libressl build-base && \
   pip3 install -U pip && \
   pip3 install ansible==2.10.0 boto3==1.13.10 && \
-  apk del --no-cache python3-dev libffi-dev libressl-dev build-base
+  apk del --no-cache python3-dev libffi-dev libressl-dev build-base && \
+  wget -O gosrc https://dl.google.com/go/go1.17.1.linux-amd64.tar.gz && \
+  rm -rf /usr/local/go && \
+  tar -C /usr/local -xzf gosrc && \
+  mkdir /lib64 && \
+  ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2 && \
+  rm -rf gosrc
+
+ENV PATH="${PATH}:/usr/local/go/bin"
+
 
 ADD release/linux/amd64/drone-ansible /bin/
 ENTRYPOINT ["/bin/drone-ansible"]
